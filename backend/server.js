@@ -43,8 +43,13 @@ app.get('/', (req, res) => {
 // ✅ Global Error Middleware
 app.use(require('./middleware/error'));
 
-// ✅ Start Server
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`✅ Server listening on port ${PORT}`);
-});
+// ✅ Start Server (Only locally)
+if (process.env.NODE_ENV !== 'production') {
+  const PORT = process.env.PORT || 5000;
+  app.listen(PORT, () => {
+    console.log(`✅ Server listening on port ${PORT}`);
+  });
+}
+
+// ✅ Export for Vercel
+module.exports = app;
