@@ -1,0 +1,102 @@
+.contact-container {
+  width: 100%;
+  min-height: 100vh;
+  background: var(--bg-deep);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 120px 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.contact-content {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.contact-card {
+  /* Card structure removed */
+  width: 100%;
+  max-width: 800px;
+  padding: 20px;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  backdrop-filter: none;
+  text-align: center;
+}
+
+.contact-container .section-title {
+  font-size: 4rem;
+  margin-bottom: 10px;
+}
+
+.contact-container .subtitle {
+  color: var(--text-muted);
+  margin-bottom: 60px;
+  font-size: 1.3rem;
+}
+
+.contact-info {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 30px;
+  margin-bottom: 60px;
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+  padding: 30px;
+  background: rgba(255, 255, 255, 0.03); /* Subtle hint remains for visibility but no 'card' */
+  border-radius: 24px;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.info-item:hover {
+  transform: translateY(-10px);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.icon {
+  font-size: 2.5rem;
+}
+
+.info-item p {
+  color: var(--text-main);
+  font-size: 1.1rem;
+  margin: 0;
+  font-weight: 600;
+}
+
+.contact-container .primary-btn {
+  padding: 20px 60px;
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  border-radius: 50px;
+  font-size: 1.2rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.4s ease;
+  box-shadow: 0 10px 20px var(--primary-glow);
+}
+
+.contact-container .primary-btn:hover {
+  background: #ffaa00;
+  transform: translateY(-5px);
+  box-shadow: 0 15px 30px var(--primary-glow);
+}
+
+@media (max-width: 768px) {
+  .contact-container .section-title { font-size: 2.5rem; }
+  .contact-info { grid-template-columns: 1fr; }
+  .contact-container .primary-btn { width: 100%; }
+}

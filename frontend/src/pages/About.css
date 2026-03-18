@@ -1,0 +1,73 @@
+.about-container {
+  width: 100%;
+  min-height: 100vh;
+  background: var(--bg-deep);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 120px 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.about-content {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+}
+
+.main-about-card {
+  /* Card structure removed */
+  padding: 20px;
+  max-width: 1000px;
+  margin: 0 auto;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  backdrop-filter: none;
+}
+
+.about-container .section-title {
+  font-size: 4.5rem;
+  margin-bottom: 40px;
+  text-align: center;
+}
+
+.about-text p {
+  font-size: 1.4rem;
+  color: var(--text-muted);
+  line-height: 1.8;
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.gold-btn {
+  display: block;
+  margin: 50px auto 0;
+  padding: 18px 50px;
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  border-radius: 50px;
+  font-size: 1.2rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.4s ease;
+  box-shadow: 0 10px 20px var(--primary-glow);
+}
+
+.gold-btn:hover {
+  transform: translateY(-5px);
+  background: #ffaa00;
+  box-shadow: 0 15px 30px var(--primary-glow);
+}
+
+@media (max-width: 1024px) {
+  .about-container .section-title { font-size: 3.5rem; }
+}
+
+@media (max-width: 768px) {
+  .about-container .section-title { font-size: 2.5rem; }
+  .about-text p { font-size: 1.1rem; }
+  .gold-btn { width: 100%; }
+}
