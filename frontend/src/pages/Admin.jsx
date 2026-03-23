@@ -20,7 +20,7 @@ export default function Admin() {
 
   const unlockAdmin = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/auth/admin-login", { method: "POST" });
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/admin-login`, { method: "POST" });
       const data = await res.json();
       if (res.ok) {
         localStorage.setItem("token", data.token);
@@ -36,7 +36,7 @@ export default function Admin() {
 
     // Fetch categories first to have them for product creation
     try {
-      const catRes = await fetch("http://localhost:5000/api/categories");
+      const catRes = await fetch(`${import.meta.env.VITE_API_URL}/api/categories`);
       const catData = await catRes.json();
       setCategories(catData);
       if (catData.length > 0 && !newProduct.category) {
@@ -47,15 +47,15 @@ export default function Admin() {
     }
 
     if (activeTab === "products") {
-      const res = await fetch("http://localhost:5000/api/products");
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/products`);
       const data = await res.json();
       setProducts(data);
     } else if (activeTab === "users") {
-      const res = await fetch("http://localhost:5000/api/users", { headers });
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/users`, { headers });
       const data = await res.json();
       setUsers(data);
     } else if (activeTab === "orders") {
-      const res = await fetch("http://localhost:5000/api/orders", { headers });
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/orders`, { headers });
       const data = await res.json();
       setOrders(data);
     }
@@ -80,7 +80,7 @@ export default function Admin() {
     }
 
     try {
-      const res = await fetch("http://localhost:5000/api/products", {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/products`, {
         method: "POST",
         headers: { "Authorization": `Bearer ${token}` },
         body: formData
@@ -103,7 +103,7 @@ export default function Admin() {
   const handleDeleteProduct = async (id) => {
     const token = localStorage.getItem("token");
     try {
-      const res = await fetch(`http://localhost:5000/api/products/${id}`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/products/${id}`, {
         method: "DELETE",
         headers: { "Authorization": `Bearer ${token}` }
       });
@@ -145,7 +145,7 @@ export default function Admin() {
               <tbody>
                 {products.length ? products.map(p => (
                   <tr key={p._id}>
-                    <td>{p.image && <img src={`http://localhost:5000${p.image}`} alt={p.name} width="50" />}</td>
+                    <td>{p.image && <img src={`${import.meta.env.VITE_API_URL}${p.image}`} alt={p.name} width="50" />}</td>
                     <td>{p.name}</td>
                     <td>₹{p.price}</td>
                     <td><button className="del-btn" onClick={() => handleDeleteProduct(p._id)}>Delete</button></td>

@@ -7,7 +7,7 @@ export default function Product() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/products")
+    fetch(`${import.meta.env.VITE_API_URL}/api/products`)
       .then((res) => res.json())
       .then((data) => {
         setProducts(data);
@@ -28,7 +28,7 @@ export default function Product() {
     }
 
     try {
-      const res = await fetch("http://localhost:5000/api/cart/add", {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/cart/add`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -65,7 +65,7 @@ export default function Product() {
               products.map((p) => (
                 <div key={p._id} className="product-card glass-panel pop-in">
                   <div className="image-wrapper">
-                    <img src={`http://localhost:5000/${p.image}`} alt={p.name} loading="lazy" />
+                    <img src={`${import.meta.env.VITE_API_URL}/${p.image}`} alt={p.name} loading="lazy" />
                     <div className="price-tag">₹{p.price}</div>
                   </div>
                   <div className="product-info">

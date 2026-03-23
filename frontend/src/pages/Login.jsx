@@ -10,7 +10,7 @@ export default function Login() {
     e.preventDefault();
     setLoading(true);
     try {
-        const res = await fetch("http://localhost:5000/api/auth/phone-login", {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/phone-login`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ mobile })
@@ -33,7 +33,7 @@ export default function Login() {
 
   const loginAsAdmin = async () => {
     try {
-        const res = await fetch("http://localhost:5000/api/auth/admin-login", { method: "POST" });
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/admin-login`, { method: "POST" });
         const data = await res.json();
         if (res.ok) {
             localStorage.setItem("token", data.token);
