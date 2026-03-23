@@ -43,8 +43,8 @@ app.get('/', (req, res) => {
 // ✅ Global Error Middleware
 app.use(require('./middleware/error'));
 
-// ✅ Start Server (Only locally)
-if (process.env.NODE_ENV !== 'production') {
+// ✅ Start Server (For Local and Render)
+if (!process.env.VERCEL) {
   const PORT = process.env.PORT || 5000;
   app.listen(PORT, () => {
     console.log(`✅ Server listening on port ${PORT}`);
