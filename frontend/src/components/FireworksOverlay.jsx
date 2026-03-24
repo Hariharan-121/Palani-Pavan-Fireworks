@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+ import React, { useEffect, useState } from "react";
 import "../pages/Fireworks.css";
 
 const FireworksOverlay = ({ count = 15 }) => {

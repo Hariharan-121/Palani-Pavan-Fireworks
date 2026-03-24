@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Checkout.css";
 import FireworksOverlay from "../components/FireworksOverlay";
+import { getWhatsAppUrl } from "../utils/whatsapp";
 
 export default function Checkout() {
   const [cart, setCart] = useState({ items: [] });
@@ -94,6 +95,36 @@ export default function Checkout() {
               rows="4"
             />
             <button type="submit" className="place-order-btn">Confirm Order 🎇</button>
+            <div style={{ marginTop: '15px' }}>
+              <p style={{ textAlign: 'center', marginBottom: '10px', fontSize: '0.9rem', color: 'var(--text-muted)' }}>- OR -</p>
+              <a 
+                href={getWhatsAppUrl(cart.items, cart.items.reduce((acc, item) => acc + (item.product?.price * item.qty || 0), 0), address)} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="whatsapp-order-btn"
+                style={{
+                  backgroundColor: '#25D366',
+                  color: 'white',
+                  padding: '12px 24px',
+                  borderRadius: '12px',
+                  textDecoration: 'none',
+                  fontWeight: 'bold',
+                  textAlign: 'center',
+                  border: 'none',
+                  cursor: 'pointer',
+                  transition: 'transform 0.2s',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '10px',
+                  width: '100%'
+                }}
+                onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.02)'}
+                onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}
+              >
+                <span style={{ fontSize: '1.2rem' }}>💬</span> Order via WhatsApp 🎇
+              </a>
+            </div>
           </form>
         </div>
       </div>

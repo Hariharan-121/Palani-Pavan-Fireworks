@@ -55,7 +55,7 @@ export default function Register() {
       <FireworksOverlay count={15} />
       
       <div className="register-card glass-panel animate-pop">
-        <h1 className="section-title gradient-text">SPP FIREWORKS</h1>
+        <h1 className="section-title gradient-text">SRI PALANI PAVAN FIREWORKS</h1>
         <p className="subtitle">Register once to light up all your celebrations.</p>
 
         <form className="register-form" onSubmit={handleRegister}>

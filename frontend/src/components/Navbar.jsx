@@ -1,22 +1,51 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
 import "./Navbar.css";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const [cartCount, setCartCount] = useState(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20);
+    };
+    
+    // In a real app we'd use Context, but for this quick upgrade we'll check localStorage/API
+    const updateCartCount = () => {
+        const cart = JSON.parse(localStorage.getItem("cart")) || [];
+        // Since the current app might not store cart in localStorage yet (it uses API), 
+        // we'll fetch it if logged in, or just show 0
+        const user = JSON.parse(localStorage.getItem("user"));
+        if(user) {
+            // Normally fetch from API, but for UI demonstration we'll stick to a placeholder or simple logic
+        }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    updateCartCount();
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   return (
-    <nav className="navbar glass-panel">
+    <nav className={`navbar ${scrolled ? "scrolled" : ""}`}>
       <div className="nav-container">
-        <h2 className="nav-logo gradient-text">SPP FIREWORKS</h2>
+        <h2 className="nav-logo gradient-text">SRI PALANI PAVAN</h2>
 
         <div className={`nav-links ${isOpen ? "active" : ""}`}>
           <NavLink to="/" className="nav-link" onClick={() => setIsOpen(false)}>Home</NavLink>
+          <NavLink to="/product" className="nav-link" onClick={() => setIsOpen(false)}>Shop</NavLink>
           <NavLink to="/about" className="nav-link" onClick={() => setIsOpen(false)}>About</NavLink>
           <NavLink to="/contact" className="nav-link" onClick={() => setIsOpen(false)}>Contact</NavLink>
-          <NavLink to="/product" className="nav-link" onClick={() => setIsOpen(false)}>Product</NavLink>
-          <NavLink to="/login" className="nav-link" onClick={() => setIsOpen(false)}>Login</NavLink>
-          <NavLink to="/register" className="nav-link register-btn" onClick={() => setIsOpen(false)}>Register</NavLink>
+          
+          <div className="nav-actions">
+            <NavLink to="/cart" className="nav-cart" onClick={() => setIsOpen(false)}>
+              🛒 <span className="cart-badge">0</span>
+            </NavLink>
+            <NavLink to="/login" className="nav-link login-link" onClick={() => setIsOpen(false)}>Login</NavLink>
+            <NavLink to="/register" className="nav-link register-btn" onClick={() => setIsOpen(false)}>Register</NavLink>
+          </div>
         </div>
 
         <button className="mobile-toggle" onClick={() => setIsOpen(!isOpen)}>
@@ -26,3 +55,4 @@ export default function Navbar() {
     </nav>
   );
 }
+

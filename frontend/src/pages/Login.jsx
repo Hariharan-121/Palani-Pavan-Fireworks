@@ -31,22 +31,7 @@ export default function Login() {
     }
   };
 
-  const loginAsAdmin = async () => {
-    try {
-        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/admin-login`, { method: "POST" });
-        const data = await res.json();
-        if (res.ok) {
-            localStorage.setItem("token", data.token);
-            localStorage.setItem("user", JSON.stringify(data.user));
-            alert("Bypassed Login: Welcome Boss! 🎇");
-            window.location.href = "/admin";
-        } else {
-            alert(data.message || "Admin access failed");
-        }
-    } catch (err) {
-        alert("Server error");
-    }
-  };
+  // ... (loginAsAdmin function removed as specified)
 
   return (
     <div className="login-page fade-in">
@@ -75,9 +60,11 @@ export default function Login() {
             </button>
           </form>
 
-          <div className="admin-access">
-            <p>Building something big? <button onClick={loginAsAdmin} className="admin-link">Admin Access</button></p>
-            <p className="register-redirect">New here? <button onClick={() => window.location.href='/register'} className="link-btn">Create Account</button></p>
+          <div className="admin-access-container">
+            <div className="access-item">
+              <span>New here?</span>
+              <button onClick={() => window.location.href='/register'} className="link-btn">Create Account</button>
+            </div>
           </div>
         </div>
       </div>

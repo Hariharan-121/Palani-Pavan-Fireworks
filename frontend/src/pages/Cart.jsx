@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Cart.css";
 import FireworksOverlay from "../components/FireworksOverlay";
+import { getWhatsAppUrl } from "../utils/whatsapp";
 
 export default function Cart() {
   const [cart, setCart] = useState({ items: [] });
@@ -90,7 +91,35 @@ export default function Cart() {
             </div>
             <div className="cart-summary glass-panel">
               <h3>Total: <span className="gradient-text">₹{total}</span></h3>
-              <button className="checkout-btn" onClick={() => navigate("/checkout")}>Proceed to Checkout 🧨</button>
+              <div className="cart-actions" style={{ display: 'flex', gap: '10px', flexDirection: 'column' }}>
+                <button className="checkout-btn" onClick={() => navigate("/checkout")}>Proceed to Checkout 🧨</button>
+                <a 
+                  href={getWhatsAppUrl(cart.items, total)} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="whatsapp-order-btn"
+                  style={{
+                    backgroundColor: '#25D366',
+                    color: 'white',
+                    padding: '12px 24px',
+                    borderRadius: '12px',
+                    textDecoration: 'none',
+                    fontWeight: 'bold',
+                    textAlign: 'center',
+                    border: 'none',
+                    cursor: 'pointer',
+                    transition: 'transform 0.2s',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '10px'
+                  }}
+                  onMouseOver={(e) => e.target.style.transform = 'scale(1.02)'}
+                  onMouseOut={(e) => e.target.style.transform = 'scale(1)'}
+                >
+                  <span style={{ fontSize: '1.2rem' }}>💬</span> Order via WhatsApp 🎇
+                </a>
+              </div>
             </div>
           </div>
         )}
