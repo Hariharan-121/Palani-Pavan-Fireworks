@@ -178,11 +178,20 @@
     font-size: 2.2rem;
     line-height: 1.2;
     letter-spacing: 0;
+    max-width: 90%;
+    margin: 0 auto;
   }
 
   .hero-subtitle {
     font-size: 1rem;
-    padding: 0 10px;
+    padding: 0 15px;
+    max-width: 100%;
+  }
+
+  .hero-btns {
+    flex-direction: column;
+    width: 100%;
+    padding: 0 40px;
   }
 
   .hero-logo {
@@ -203,12 +212,15 @@
 }
 
 @media (max-width: 480px) {
+  .hero-section { padding-top: 100px; }
   .hero-title {
-    font-size: 1.8rem;
+    font-size: 1.95rem;
+    padding: 0 10px;
   }
 
   .section-title {
     font-size: 1.8rem;
+    padding: 0 10px;
   }
 
   .hero-logo {

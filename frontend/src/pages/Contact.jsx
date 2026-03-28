@@ -31,27 +31,15 @@ export default function Contact() {
               <p>123 Fireworks Lane, Sivakasi, Tamil Nadu, 626123</p>
             </div>
             
-            <a 
-              href={`https://wa.me/${whatsappNumber}?text=${encodeURIComponent("Welcome to Sri Palani Pavan Fireworks ✨\n\nI have a query about your products. 🧨🎇")}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="info-card glass-panel pop-in" 
-              style={{ animationDelay: '0.1s', textDecoration: 'none', color: 'inherit' }}
-            >
-              <span className="icon">💬</span>
-              <h3>WhatsApp Us</h3>
-              <p>Instant Support on WhatsApp</p>
-              <p>+{whatsappNumber}</p>
-            </a>
 
-            <div className="info-card glass-panel pop-in" style={{ animationDelay: '0.2s' }}>
+            <div className="info-card glass-panel pop-in" style={{ animationDelay: '0.1s' }}>
               <span className="icon">📞</span>
               <h3>Call Support</h3>
               <p>+{whatsappNumber}</p>
               <p>+91 11223 34455</p>
             </div>
 
-            <div className="info-card glass-panel pop-in" style={{ animationDelay: '0.3s' }}>
+            <div className="info-card glass-panel pop-in" style={{ animationDelay: '0.2s' }}>
               <span className="icon">📧</span>
               <h3>Email Inquiries</h3>
               <p>orders@sripalanipavan.com</p>
@@ -59,7 +47,7 @@ export default function Contact() {
             </div>
           </div>
 
-          <form className="contact-form glass-panel pop-in" onSubmit={handleSubmit} style={{ animationDelay: '0.4s' }}>
+          <form className="contact-form glass-panel pop-in" onSubmit={handleSubmit} style={{ animationDelay: '0.3s' }}>
             <div className="form-group">
               <label>Full Name</label>
               <input 
@@ -93,6 +81,38 @@ export default function Contact() {
             <button type="submit" className="submit-btn primary-btn">Send Message 🎇</button>
           </form>
         </div>
+
+        {/* Option 7: Google Maps Store Locator */}
+        <section className="map-section" style={{ marginTop: '80px', textAlign: 'center' }}>
+          <header className="map-header slide-up">
+            <h2 className="gradient-text">Visit Our Store 📍</h2>
+            <p className="subtitle">Exploration starts here. Visit Sivakasi's premium cracker depot.</p>
+          </header>
+          
+          <div className="map-container glass-panel pop-in" style={{ marginTop: '40px', padding: '10px', borderRadius: '32px', overflow: 'hidden', position: 'relative' }}>
+            <iframe 
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d31484.576882200213!2d77.7833!3d9.45!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3b06cf72c4ca7771%3A0xe5a1413a967f62b!2sSivakasi%2C%20Tamil%20Nadu!5e0!3m2!1sen!2sin!4v1711200000000!5m2!1sen!2sin" 
+              width="100%" 
+              height="450" 
+              style={{ border: 0, borderRadius: '24px' }} 
+              allowFullScreen="" 
+              loading="lazy" 
+              referrerPolicy="no-referrer-when-downgrade"
+            ></iframe>
+            
+            <div style={{ marginTop: '20px', paddingBottom: '20px' }}>
+              <a 
+                href="https://www.google.com/maps/dir//Sivakasi,+Tamil+Nadu" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="primary-btn"
+                style={{ textDecoration: 'none', display: 'inline-block' }}
+              >
+                Get Directions 🚗
+              </a>
+            </div>
+          </div>
+        </section>
       </div>
     </div>
   );
