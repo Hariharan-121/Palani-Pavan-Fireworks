@@ -10,7 +10,9 @@ const productSchema = new mongoose.Schema({
   soundLevel: { type: String }, // Low/Medium/High
   ageCategory: { type: String }, // Kids/Adults
   isCombo: { type: Boolean, default: false },
-  isActive: { type: Boolean, default: true }
+  isActive: { type: Boolean, default: true },
+  rating: { type: Number, default: 0 },
+  numReviews: { type: Number, default: 0 }
 }, { timestamps: true });
 
 module.exports = mongoose.model('Product', productSchema);

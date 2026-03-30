@@ -49,7 +49,8 @@ exports.register = async (req, res) => {
                 id: user._id,
                 name: user.name,
                 email: user.email,
-                mobile: user.mobile
+                mobile: user.mobile,
+                isAdmin: user.isAdmin
             }
         });
 
@@ -90,7 +91,9 @@ exports.login = async (req, res) => {
             user: {
                 id: user._id,
                 name: user.name,
-                email: user.email
+                email: user.email,
+                mobile: user.mobile,
+                isAdmin: user.isAdmin
             }
         });
 
@@ -120,7 +123,7 @@ exports.phoneLogin = async (req, res) => {
         res.status(200).json({
             message: "Login successful",
             token: generateToken(user),
-            user: { id: user._id, name: user.name, mobile: user.mobile }
+            user: { id: user._id, name: user.name, mobile: user.mobile, isAdmin: user.isAdmin }
         });
     } catch (error) {
         res.status(500).json({ error: error.message });

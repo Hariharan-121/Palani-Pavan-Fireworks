@@ -10,9 +10,9 @@ const admin = async (req, res, next) => {
     // ✅ Fetch fresh user from DB
     const user = await User.findById(req.user._id);
 
-    // ✅ Check admin role
-    if (user && user.isAdmin) {
-      return next(); // ✅ Admin allowed
+    // ✅ TEMPORARY: Allow all logged-in users for now as requested
+    if (user) {
+      return next(); 
     }
 
     return res.status(403).json({ message: 'Admin access denied' });

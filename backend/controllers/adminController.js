@@ -11,9 +11,50 @@ exports.getDashboardStats = async (req, res) => {
     const totalOrders = await Order.countDocuments();
     const totalProducts = await Product.countDocuments();
 
-    const totalRevenue = await Order.aggregate([
-      { $match: { isPaid: true } },
-      { $group: { _id: null, total: { $sum: '$totalAmount' } } }
+    // 🏆 Monthly Revenue Agregration (Last 30 days)
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+    const salesStats = await Order.aggregate([
+      { $match: { createdAt: { $gte: thirtyDaysAgo } } },
+      {
+        $group: {
+          _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
+          revenue: { $sum: "$totalPrice" },
+          count: { $sum: 1 }
+        }
+      },
+      { $sort: { "_id": 1 } }
+    ]);
+
+    // 👤 User Growth stats (Last 30 days)
+    const userStats = await User.aggregate([
+      { $match: { createdAt: { $gte: thirtyDaysAgo } } },
+      {
+        $group: {
+          _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
+          count: { $sum: 1 }
+        }
+      },
+      { $sort: { "_id": 1 } }
+    ]);
+
+    // 🛒 Top Selling Products
+    const topProducts = await Order.aggregate([
+      { $unwind: "$items" },
+      {
+        $group: {
+          _id: "$items.name",
+          totalSold: { $sum: "$items.quantity" },
+          revenue: { $sum: { $multiply: ["$items.price", "$items.quantity"] } }
+        }
+      },
+      { $sort: { totalSold: -1 } },
+      { $limit: 5 }
+    ]);
+
+    const totalRevenueResult = await Order.aggregate([
+        { $group: { _id: null, total: { $sum: "$totalPrice" } } }
     ]);
 
     res.status(200).json({
@@ -22,7 +63,10 @@ exports.getDashboardStats = async (req, res) => {
         totalUsers,
         totalOrders,
         totalProducts,
-        totalRevenue: totalRevenue[0]?.total || 0,
+        totalRevenue: totalRevenueResult[0]?.total || 0,
+        salesTimeline: salesStats,
+        userTimeline: userStats,
+        topProducts
       },
     });
   } catch (error) {

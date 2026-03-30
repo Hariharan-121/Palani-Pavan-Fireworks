@@ -28,6 +28,17 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  const [theme, setTheme] = useState(localStorage.getItem("theme") || "dark");
+
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", theme);
+    localStorage.setItem("theme", theme);
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setTheme(prev => (prev === "dark" ? "light" : "dark"));
+  };
+
   return (
     <nav className={`navbar ${scrolled ? "scrolled" : ""}`}>
       <div className="nav-container">
@@ -40,9 +51,15 @@ export default function Navbar() {
           <NavLink to="/contact" className="nav-link" onClick={() => setIsOpen(false)}>Contact</NavLink>
           
           <div className="nav-actions">
+            <button className="theme-toggle" onClick={toggleTheme} title="Toggle Dark/Light Mode">
+              {theme === "dark" ? "🌙" : "☀️"}
+            </button>
             <NavLink to="/cart" className="nav-cart" onClick={() => setIsOpen(false)}>
               🛒 <span className="cart-badge">0</span>
             </NavLink>
+            {JSON.parse(localStorage.getItem("user"))?.isAdmin && (
+              <NavLink to="/admin" className="nav-link" onClick={() => setIsOpen(false)}>Admin Panel</NavLink>
+            )}
             <NavLink to="/login" className="nav-link login-link" onClick={() => setIsOpen(false)}>Login</NavLink>
             <NavLink to="/register" className="nav-link register-btn" onClick={() => setIsOpen(false)}>Register</NavLink>
           </div>

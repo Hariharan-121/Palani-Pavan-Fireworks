@@ -1,0 +1,21 @@
+{
+  "name": "Sri Palani Pavan Fireworks",
+  "short_name": "SPP Fireworks",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#020617",
+  "theme_color": "#f8931f",
+  "description": "Premium Sivakasi Fireworks for your family celebrations.",
+  "icons": [
+    {
+      "src": "/spp-logo.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/spp-logo.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

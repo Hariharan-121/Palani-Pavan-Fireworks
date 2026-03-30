@@ -2,7 +2,7 @@
 
 :root {
   --primary: #f8931f;
-  --primary-glow: rgba(248, 147, 31, 0.5);
+  --primary-glow: rgba(248, 147, 31, 0.4);
   --bg-deep: #020617;
   --bg-surface: #0f172a;
   --text-main: #f8fafc;
@@ -10,6 +10,17 @@
   --glass: rgba(255, 255, 255, 0.03);
   --glass-border: rgba(255, 255, 255, 0.1);
   --glass-blur: blur(16px);
+  --card-shadow: 0 8px 32px 10px rgba(0, 0, 0, 0.37);
+}
+
+[data-theme='light'] {
+  --bg-deep: #f8fafc;
+  --bg-surface: #ffffff;
+  --text-main: #0f172a;
+  --text-muted: #475569;
+  --glass: rgba(255, 255, 255, 0.7);
+  --glass-border: rgba(15, 23, 42, 0.1);
+  --card-shadow: 0 8px 32px rgba(15, 23, 42, 0.1);
 }
 
 * {

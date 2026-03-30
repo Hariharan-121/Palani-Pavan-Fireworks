@@ -21,7 +21,11 @@ export default function Login() {
             localStorage.setItem("token", data.token);
             localStorage.setItem("user", JSON.stringify(data.user));
             alert("Welcome back! 🧨");
-            window.location.href = "/";
+            if (data.user?.isAdmin) {
+                window.location.href = "/admin";
+            } else {
+                window.location.href = "/";
+            }
         } else {
             alert(data.message || "Login failed");
         }

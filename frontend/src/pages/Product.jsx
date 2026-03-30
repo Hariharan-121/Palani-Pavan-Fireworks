@@ -1,63 +1,38 @@
 import React, { useState, useEffect } from "react";
 import "./Product.css";
 import FireworksOverlay from "../components/FireworksOverlay";
-import { getWhatsAppUrl } from "../utils/whatsapp";
 
 export default function Product() {
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loadingReviews, setLoadingReviews] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [reviews, setReviews] = useState([]);
+  const [newReview, setNewReview] = useState({ rating: 5, comment: "" });
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [prodRes, catRes] = await Promise.all([
-          fetch(`${import.meta.env.VITE_API_URL}/api/products`),
-          fetch(`${import.meta.env.VITE_API_URL}/api/categories`)
-        ]);
+        const prodRes = await fetch(`${import.meta.env.VITE_API_URL}/api/products`);
+        const catRes = await fetch(`${import.meta.env.VITE_API_URL}/api/categories`);
         
         const prodData = await prodRes.json();
         const catData = await catRes.json();
         
-        setProducts(prodData);
-        setCategories(catData);
+        const productsArray = Array.isArray(prodData) ? prodData : [];
+        setProducts(productsArray);
+        setCategories(Array.isArray(catData) ? catData : []);
       } catch (error) {
-        console.error("Error fetching data:", error);
+        console.error("Error fetching products:", error);
       } finally {
         setLoading(false);
       }
     };
-    
     fetchData();
   }, []);
-
-  const addToCart = async (productId) => {
-    const user = JSON.parse(localStorage.getItem("user"));
-    const token = localStorage.getItem("token");
-    if (!token) {
-      alert("Please login to add items to cart 🧨");
-      window.location.href = "/login";
-      return;
-    }
-
-    try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/cart/add`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify({ userId: user?.id, productId, quantity: 1 })
-      });
-      if (res.ok) {
-        alert("Boom! Added to Cart! 🎇");
-      }
-    } catch (err) {
-      alert("Error adding to cart");
-    }
-  };
 
   const filteredProducts = products.filter(p => {
     const pName = p.name || "";
@@ -65,11 +40,10 @@ export default function Product() {
     const matchesSearch = pName.toLowerCase().includes(searchQuery.toLowerCase()) || 
                           pDesc.toLowerCase().includes(searchQuery.toLowerCase());
     
-    // Robust category matching
     let categoryName = "Uncategorized";
-    if (typeof p.category === 'object' && p.category?.name) {
+    if (p.category && typeof p.category === 'object' && p.category.name) {
       categoryName = p.category.name;
-    } else if (typeof p.category === 'string') {
+    } else if (p.category) {
       const catObj = categories.find(c => c._id === p.category);
       if (catObj) categoryName = catObj.name;
     }
@@ -79,29 +53,55 @@ export default function Product() {
     return matchesSearch && matchesCategory;
   });
 
-  const addToWishlist = async (productId) => {
+  const renderStars = (rating) => (
+    <div className="stars-container" title={`${rating || 0} stars`}>
+      {[...Array(5)].map((_, i) => (
+        <span key={i} className={`star ${i < Math.floor(rating || 0) ? "filled" : ""}`}>★</span>
+      ))}
+      <span className="rating-num">({rating ? rating.toFixed(1) : "New"})</span>
+    </div>
+  );
+
+  const openProduct = async (product) => {
+    setSelectedProduct(product);
+    setLoadingReviews(true);
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/reviews/product/${product._id}`);
+      const data = await res.json();
+      setReviews(Array.isArray(data) ? data : []);
+    } catch (e) {
+      console.error("Error fetching reviews", e);
+    } finally {
+      setLoadingReviews(false);
+    }
+  };
+
+  const addToCart = async (productId) => {
     const token = localStorage.getItem("token");
     if (!token) {
-      alert("Please login to save to wishlist ❤️");
+      alert("Please login to shop! 🧨");
       window.location.href = "/login";
       return;
     }
+    alert("Added to cart! (Simulated)");
+  };
 
+  const handleReviewSubmit = async (e) => {
+    e.preventDefault();
+    const token = localStorage.getItem("token");
+    if(!token) return alert("Please login to leave a review!");
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/wishlist`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/reviews`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify({ productId })
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ productId: selectedProduct._id, rating: newReview.rating, comment: newReview.comment })
       });
-      if (res.ok) {
-        alert("Saved to your Wishlist! ❤️✨");
+      if(res.ok) {
+        alert("Review shared! 🎆");
+        openProduct(selectedProduct);
+        setNewReview({ rating: 5, comment: "" });
       }
-    } catch (err) {
-      alert("Error adding to wishlist");
-    }
+    } catch (err) { alert("Failed to save review"); }
   };
 
   return (
@@ -109,117 +109,106 @@ export default function Product() {
       <FireworksOverlay count={15} />
       
       <div className="product-container section-container">
-        <header className="product-header slide-up">
-          <h1 className="section-title gradient-text">Premium Collection</h1>
-          <p className="subtitle">Sivakasi's most celebrated explosives, handpicked for you.</p>
-        </header>
-
-        {/* Filter Controls */}
-        <div className="filter-controls glass-panel pop-in">
-          <div className="search-box">
+        <div className="filter-controls-top glass-panel">
+          <div className="search-bar-wrapper">
             <input 
               type="text" 
-              placeholder="Search for fireworks... (e.g. Sparklers, Rockets)" 
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search fireworks..." 
+              value={searchQuery} 
+              onChange={e => setSearchQuery(e.target.value)} 
+              className="search-input-medium"
             />
-            <span className="search-icon">🔍</span>
+            <span className="search-icon-small">🔍</span>
           </div>
-          
-          <div className="category-filters">
-            <button 
-              className={`cat-btn ${selectedCategory === "All" ? "active" : ""}`}
-              onClick={() => setSelectedCategory("All")}
-            >
-              All
-            </button>
+
+          <div className="category-bar">
+            <button className={`cat-pill ${selectedCategory === "All" ? "active" : ""}`} onClick={() => setSelectedCategory("All")}>All</button>
             {categories.map(cat => (
-              <button 
-                key={cat._id} 
-                className={`cat-btn ${selectedCategory === cat.name ? "active" : ""}`}
-                onClick={() => setSelectedCategory(cat.name)}
-              >
-                {cat.name}
-              </button>
+              <button key={cat._id} className={`cat-pill ${selectedCategory === cat.name ? "active" : ""}`} onClick={() => setSelectedCategory(cat.name)}>{cat.name}</button>
             ))}
           </div>
         </div>
 
+        <header className="product-header-compact">
+          <h1 className="section-title-small gradient-text">Premium Collection</h1>
+          <p className="subtitle-small">Explosive celebrations starts here.</p>
+        </header>
+
         {loading ? (
           <div className="product-grid">
             {[...Array(8)].map((_, i) => (
-              <div key={i} className="product-card skeleton-card glass-panel pop-in">
-                <div className="image-wrapper skeleton-shimmer"></div>
-                <div className="product-info">
-                  <div className="skeleton-line skeleton-shimmer half"></div>
-                  <div className="skeleton-line skeleton-shimmer full"></div>
-                  <div className="skeleton-line skeleton-shimmer full"></div>
-                  <div className="skeleton-btn skeleton-shimmer"></div>
-                </div>
-              </div>
+              <div key={i} className="product-card skeleton-card glass-panel"><div className="skeleton-shimmer"></div></div>
             ))}
           </div>
         ) : (
           <div className="product-grid">
             {filteredProducts.length > 0 ? (
-              filteredProducts.map((p) => (
-                <div key={p._id} className="product-card glass-panel pop-in">
+              filteredProducts.map(p => (
+                <div key={p._id} className="product-card glass-panel" onClick={() => openProduct(p)}>
                   <div className="image-wrapper">
-                    <img src={`${import.meta.env.VITE_API_URL}/${p.image}`} alt={p.name} loading="lazy" />
+                    <img src={`${import.meta.env.VITE_API_URL}/${p.image}`} alt={p.name} />
                     <div className="price-tag">₹{p.price}</div>
-                    {p.isCombo && <div className="combo-badge">Combo Pack ✨</div>}
-                    <button className="wishlist-btn" onClick={() => addToWishlist(p._id)}>
-                      ❤️
-                    </button>
                   </div>
                   <div className="product-info">
                     <div className="product-meta">
                       <span className="product-cat">{typeof p.category === 'object' ? p.category?.name : categories.find(c => c._id === p.category)?.name}</span>
-                      {p.soundLevel && <span className={`sound-lvl ${p.soundLevel.toLowerCase()}`}>{p.soundLevel} Sound</span>}
+                      {p.soundLevel && <span className={`sound-lvl-badge ${p.soundLevel.toLowerCase()}`}>{p.soundLevel} Sound</span>}
                     </div>
+                    {renderStars(p.rating)}
                     <h3>{p.name}</h3>
-                    <p>{p.description}</p>
-                    <div className="card-footer" style={{ display: 'flex', gap: '8px' }}>
-                      {p.stock > 0 ? (
-                        <button className="add-btn" style={{ flex: 1 }} onClick={() => addToCart(p._id)}>
-                          Add to Cart 🧨
-                        </button>
-                      ) : (
-                        <button className="add-btn out-of-stock" style={{ flex: 1 }} disabled>
-                          Out of Stock
-                        </button>
-                      )}
-                      <a 
-                        href={`https://wa.me/${import.meta.env.VITE_WHATSAPP_NUMBER || "919876543210"}?text=${encodeURIComponent("Welcome to Sri Palani Pavan Fireworks ✨\n\nI'm interested in: " + p.name + "\nPrice: ₹" + p.price + "\n\nPlease provide more details. 🧨")}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="whatsapp-inquiry-btn"
-                        style={{
-                          backgroundColor: '#25D366',
-                          color: 'white',
-                          padding: '0 12px',
-                          borderRadius: '12px',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          textDecoration: 'none',
-                          fontSize: '1.2rem'
-                        }}
-                        title="Inquire on WhatsApp"
-                      >
-                        💬
-                      </a>
-                    </div>
+                    <p className="p-desc">{p.description}</p>
+                    <button className="add-btn" onClick={e => { e.stopPropagation(); addToCart(p); }}>Quick Buy 🧨</button>
                   </div>
                 </div>
               ))
             ) : (
-              <div className="no-products glass-panel">No fireworks found matching your criteria.</div>
+              <div className="no-products glass-panel">No crackers found matching your filter.</div>
             )}
           </div>
         )}
       </div>
+
+      {selectedProduct && (
+        <div className="product-modal-root" onClick={() => setSelectedProduct(null)}>
+          <div className="modal-content glass-panel" onClick={e => e.stopPropagation()}>
+            <button className="close-modal" onClick={() => setSelectedProduct(null)}>✕</button>
+            <div className="modal-body-layout">
+              <div className="modal-image-sec">
+                <img src={`${import.meta.env.VITE_API_URL}/${selectedProduct.image}`} alt={selectedProduct.name} />
+              </div>
+              <div className="modal-details-sec">
+                <h1>{selectedProduct.name}</h1>
+                <div className="modal-price">₹{selectedProduct.price}</div>
+                <p>{selectedProduct.description}</p>
+                <button className="add-btn" onClick={() => addToCart(selectedProduct)}>Add to Bag 🧨</button>
+
+                <div className="reviews-section">
+                  <h3>Reviews ({reviews.length})</h3>
+                  {loadingReviews ? <p>Loading reviews...</p> : (
+                    <div className="reviews-list">
+                      {reviews.map((r, i) => (
+                        <div key={i} className="review-item">
+                          <strong>{r.user?.name || "Customer"}</strong> {renderStars(r.rating)}
+                          <p>{r.comment}</p>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  <form className="add-review-form" onSubmit={handleReviewSubmit}>
+                    <div className="rating-select">
+                      {[1,2,3,4,5].map(v => (
+                        <button key={v} type="button" className={newReview.rating >= v ? "star filled" : "star"} onClick={() => setNewReview({...newReview, rating: v})}>★</button>
+                      ))}
+                    </div>
+                    <textarea placeholder="Write a review..." value={newReview.comment} onChange={e => setNewReview({...newReview, comment: e.target.value})} required />
+                    <button type="submit" className="submit-rev-btn">Submit 🎇</button>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
-
