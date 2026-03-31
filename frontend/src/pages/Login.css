@@ -105,7 +105,7 @@
   font-size: 0.95rem;
 }
 
-.admin-link, .link-btn {
+.admin-link, .link-btn, .register-link-btn {
   background: none;
   border: none;
   color: var(--primary);
@@ -118,7 +118,7 @@
   padding: 0;
 }
 
-.admin-link:hover, .link-btn:hover {
+.admin-link:hover, .link-btn:hover, .register-link-btn:hover {
   color: #ffaa00;
 }
 

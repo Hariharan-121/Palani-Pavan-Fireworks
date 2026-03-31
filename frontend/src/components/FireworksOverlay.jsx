@@ -85,7 +85,8 @@ const FireworksOverlay = () => {
       }
 
       explode() {
-        const count = 50 + Math.floor(Math.random() * 40);
+        const isMobile = window.innerWidth < 768;
+        const count = isMobile ? (15 + Math.floor(Math.random() * 15)) : (30 + Math.floor(Math.random() * 20));
         for (let i = 0; i < count; i++) {
           particles.push(new Particle(this.x, this.y, this.color));
         }
@@ -97,7 +98,8 @@ const FireworksOverlay = () => {
       ctx.fillStyle = "rgba(2, 6, 23, 0.15)";
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      if (Math.random() < 0.035) {
+      const chance = window.innerWidth < 768 ? 0.008 : 0.015;
+      if (Math.random() < chance) {
         fireworks.push(new Firework());
       }
 

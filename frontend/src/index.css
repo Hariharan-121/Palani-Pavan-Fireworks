@@ -13,6 +13,13 @@
   --card-shadow: 0 8px 32px 10px rgba(0, 0, 0, 0.37);
 }
 
+@media (max-width: 768px) {
+  :root {
+    --glass-blur: blur(4px);
+    --card-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+  }
+}
+
 [data-theme='light'] {
   --bg-deep: #f8fafc;
   --bg-surface: #ffffff;

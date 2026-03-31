@@ -24,10 +24,13 @@ export default function Login() {
             if (data.user?.isAdmin) {
                 window.location.href = "/admin";
             } else {
-                window.location.href = "/";
+                window.location.href = "/product";
             }
         } else {
             alert(data.message || "Login failed");
+            if (data.message === "Unknown User") {
+                window.location.href = "/register";
+            }
         }
     } catch (error) {
         setLoading(false);
@@ -67,7 +70,12 @@ export default function Login() {
           <div className="admin-access-container">
             <div className="access-item">
               <span>New here?</span>
-              <button onClick={() => window.location.href='/register'} className="link-btn">Create Account</button>
+              <button 
+                onClick={() => window.location.href='/register'} 
+                className="register-link-btn"
+              >
+                Create Account
+              </button>
             </div>
           </div>
         </div>

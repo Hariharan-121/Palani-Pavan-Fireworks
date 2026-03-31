@@ -13,6 +13,8 @@ import Register from "./pages/Register";
 import Cart from "./pages/Cart";
 import Checkout from "./pages/Checkout";
 import Admin from "./pages/Admin";
+import AdminLogin from "./pages/AdminLogin";
+import AdminRoute from "./components/AdminRoute";
 import FloatingWhatsApp from "./components/FloatingWhatsApp";
 
 function App() {
@@ -29,7 +31,8 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/cart" element={<Cart />} />
         <Route path="/checkout" element={<Checkout />} />
-        <Route path="/admin" element={<Admin />} />
+        <Route path="/admin/login" element={<AdminLogin />} />
+        <Route path="/admin" element={<AdminRoute><Admin /></AdminRoute>} />
       </Routes>
 
       <Footer />

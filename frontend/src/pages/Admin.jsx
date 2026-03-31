@@ -16,6 +16,7 @@ export default function Admin() {
   const [error, setError] = useState(null);
   const [newProduct, setNewProduct] = useState({ name: "", price: "", description: "", category: "" });
   const [imageFile, setImageFile] = useState(null);
+  const [editId, setEditId] = useState(null);
 
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
@@ -71,39 +72,77 @@ export default function Admin() {
   useEffect(() => {
     fetchData();
 
-    // ⌚ AUTO-REFRESH: Automatically update stats every 30 seconds
+    // ⌚ AUTO-REFRESH: Automatically update stats every 10 seconds
     const interval = setInterval(() => {
       fetchData();
-    }, 30000); // 30 seconds
+    }, 10000); // 10 seconds
 
     return () => clearInterval(interval);
   }, [activeTab]);
 
-  const handleAddProduct = async (e) => {
+  const handleSubmitProduct = async (e) => {
     e.preventDefault();
     const token = localStorage.getItem("token");
     const formData = new FormData();
     formData.append("name", newProduct.name);
     formData.append("price", newProduct.price);
     formData.append("description", newProduct.description);
-    formData.append("category", newProduct.category || categories[0]?._id); 
+    formData.append("category", newProduct.category || (categories.length > 0 ? categories[0]?._id : "")); 
     if (imageFile) formData.append("image", imageFile);
 
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/products`, {
-        method: "POST",
+      const url = editId 
+        ? `${import.meta.env.VITE_API_URL}/api/products/${editId}`
+        : `${import.meta.env.VITE_API_URL}/api/products`;
+      
+      const method = editId ? "PUT" : "POST";
+
+      const res = await fetch(url, {
+        method: method,
         headers: { "Authorization": `Bearer ${token}` },
         body: formData
       });
+
       if (res.ok) {
-        alert("Product added! 🎆");
+        alert(editId ? "Product updated! 🎆" : "Product added! 🎆");
         fetchData();
         setNewProduct({ name: "", price: "", description: "", category: "" });
         setImageFile(null);
+        setEditId(null);
+      } else {
+        const errorData = await res.json();
+        alert(errorData.message || "Failed to process product");
       }
     } catch (error) {
-       alert("Failed to add product");
+       alert("Network error processing product");
     }
+  };
+
+  const handleUpdateOrderStatus = async (id, status) => {
+    const token = localStorage.getItem("token");
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/orders/${id}/status`, {
+        method: "PUT",
+        headers: { 
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}` 
+        },
+        body: JSON.stringify({ status })
+      });
+      if(res.ok) fetchData();
+    } catch (err) { alert("Failed to update status"); }
+  };
+
+  const handleEditProduct = (p) => {
+    setEditId(p._id);
+    setNewProduct({ 
+        name: p.name, 
+        price: p.price, 
+        description: p.description || "", 
+        category: typeof p.category === 'object' ? p.category?._id : p.category 
+    });
+    // Scroll to form nicely
+    window.scrollTo({ top: 300, behavior: 'smooth' });
   };
 
   const handleDeleteProduct = async (id) => {
@@ -200,16 +239,21 @@ export default function Admin() {
             {activeTab === "products" && (
               <div className="admin-section fade-in">
                 <h3>Product Management</h3>
-                <form className="admin-form-glass" onSubmit={handleAddProduct}>
-                   <div className="form-row">
+                <form className="admin-form-glass" onSubmit={handleSubmitProduct}>
+                   <div className="form-header">
+                      <h4>{editId ? "Update Cracker" : "Add New Cracker"}</h4>
+                      {editId && <button type="button" className="cancel-edit" onClick={() => { setEditId(null); setNewProduct({ name: "", price: "", description: "", category: "" }); }}>Cancel Edit</button>}
+                   </div>
+                   <div className="form-grid-inputs">
                       <input type="text" placeholder="Product Name" value={newProduct.name} onChange={e => setNewProduct({...newProduct, name: e.target.value})} required />
                       <input type="number" placeholder="Price" value={newProduct.price} onChange={e => setNewProduct({...newProduct, price: e.target.value})} required />
+                      <input type="text" placeholder="Description" value={newProduct.description} onChange={e => setNewProduct({...newProduct, description: e.target.value})} />
                       <select value={newProduct.category} onChange={e => setNewProduct({...newProduct, category: e.target.value})} required>
                         <option value="">Choose Category</option>
                         {categories.map(c => <option key={c._id} value={c._id}>{c.name}</option>)}
                       </select>
                       <input type="file" onChange={e => setImageFile(e.target.files[0])} />
-                      <button type="submit" className="add-btn-admin">Add 🧨</button>
+                      <button type="submit" className="add-btn-admin">{editId ? "Update Cracker" : "Save Cracker 🧨"}</button>
                    </div>
                 </form>
 
@@ -226,7 +270,10 @@ export default function Admin() {
                                         </div>
                                     </td>
                                     <td className="price">₹{p.price}</td>
-                                    <td><button className="del-btn" onClick={() => handleDeleteProduct(p._id)}>Delete</button></td>
+                                    <td>
+                                        <button className="edit-btn" onClick={() => handleEditProduct(p)}>Edit</button>
+                                        <button className="del-btn" onClick={() => handleDeleteProduct(p._id)}>Delete</button>
+                                    </td>
                                 </tr>
                             ))}
                         </tbody>
@@ -256,13 +303,19 @@ export default function Admin() {
                     <h3>Order History</h3>
                     <div className="table-card glass-panel">
                         <table className="admin-table">
-                            <thead><tr><th>ID</th><th>Total</th><th>Status</th></tr></thead>
+                            <thead><tr><th>ID</th><th>Total</th><th>Status</th><th>Action</th></tr></thead>
                             <tbody>
                                 {orders.map(o => (
                                     <tr key={o._id}>
                                         <td className="small-id">{o._id}</td>
                                         <td className="price">₹{o.totalPrice}</td>
                                         <td><span className={`status-tag ${o.status.toLowerCase()}`}>{o.status}</span></td>
+                                        <td>
+                                            <div className="order-actions">
+                                                <button className="status-btn-mini d" onClick={() => handleUpdateOrderStatus(o._id, "Delivered")}>Deliver</button>
+                                                <button className="status-btn-mini c" onClick={() => handleUpdateOrderStatus(o._id, "Cancelled")}>Cancel</button>
+                                            </div>
+                                        </td>
                                     </tr>
                                 ))}
                             </tbody>

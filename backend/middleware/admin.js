@@ -10,12 +10,12 @@ const admin = async (req, res, next) => {
     // ✅ Fetch fresh user from DB
     const user = await User.findById(req.user._id);
 
-    // ✅ TEMPORARY: Allow all logged-in users for now as requested
-    if (user) {
+    // ✅ CHECK FOR ADMIN PRIVILEGES
+    if (user && user.isAdmin) {
       return next(); 
     }
 
-    return res.status(403).json({ message: 'Admin access denied' });
+    return res.status(403).json({ message: '⚠️ Restricted Access: Admins ONLY.' });
 
   } catch (error) {
     console.error("Admin Middleware Error:", error);

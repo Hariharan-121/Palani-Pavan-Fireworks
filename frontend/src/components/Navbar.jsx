@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import "./Navbar.css";
+import { isAdmin, isAuthenticated } from "../utils/auth";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -51,17 +52,32 @@ export default function Navbar() {
           <NavLink to="/contact" className="nav-link" onClick={() => setIsOpen(false)}>Contact</NavLink>
           
           <div className="nav-actions">
-            <button className="theme-toggle" onClick={toggleTheme} title="Toggle Dark/Light Mode">
-              {theme === "dark" ? "🌙" : "☀️"}
-            </button>
             <NavLink to="/cart" className="nav-cart" onClick={() => setIsOpen(false)}>
               🛒 <span className="cart-badge">0</span>
             </NavLink>
-            {JSON.parse(localStorage.getItem("user"))?.isAdmin && (
-              <NavLink to="/admin" className="nav-link" onClick={() => setIsOpen(false)}>Admin Panel</NavLink>
+            {isAuthenticated() ? (
+              <>
+                {isAdmin() && (
+                  <NavLink to="/admin" className="nav-link admin-glow" onClick={() => setIsOpen(false)}>Admin Panel</NavLink>
+                )}
+                <button 
+                  className="nav-link logout-btn" 
+                  onClick={() => {
+                    localStorage.removeItem("token");
+                    localStorage.removeItem("user");
+                    localStorage.removeItem("cart");
+                    window.location.href = "/";
+                  }}
+                >
+                  Logout 🚪
+                </button>
+              </>
+            ) : (
+              <>
+                <NavLink to="/login" className="nav-link login-link" onClick={() => setIsOpen(false)}>Login</NavLink>
+                <NavLink to="/register" className="nav-link register-btn" onClick={() => setIsOpen(false)}>Register</NavLink>
+              </>
             )}
-            <NavLink to="/login" className="nav-link login-link" onClick={() => setIsOpen(false)}>Login</NavLink>
-            <NavLink to="/register" className="nav-link register-btn" onClick={() => setIsOpen(false)}>Register</NavLink>
           </div>
         </div>
 

@@ -151,8 +151,16 @@
   display: none;
 }
 
-.login-link {
-  color: var(--text-main);
+.logout-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.logout-btn:hover {
+  color: var(--primary) !important;
+  transform: scale(1.05);
 }
 
 .mobile-toggle {
@@ -202,16 +210,23 @@
     position: fixed;
     top: 0;
     right: -100%;
-    width: 320px;
+    width: 100%; /* FULL SCREEN FOR BETTER MOBILE FEEL */
     height: 100vh;
-    background: #0f172a;
+    background: rgba(15, 23, 42, 0.98);
+    backdrop-filter: blur(25px);
     flex-direction: column;
-    padding: 100px 40px;
+    padding: 120px 40px;
     justify-content: flex-start;
-    align-items: flex-start;
-    transition: 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
-    box-shadow: -20px 0 40px rgba(0,0,0,0.5);
+    align-items: center;
+    gap: 30px;
+    transition: 0.6s cubic-bezier(0.19, 1, 0.22, 1);
+    box-shadow: -20px 0 60px rgba(0,0,0,0.8);
     z-index: 1000;
+  }
+
+  .nav-link {
+    font-size: 1.5rem;
+    color: #fff;
   }
 
   .nav-links.active {
@@ -220,15 +235,21 @@
 
   .nav-actions {
     flex-direction: column;
-    align-items: flex-start;
+    align-items: center;
     margin-left: 0;
-    margin-top: 30px;
+    margin-top: 50px;
     width: 100%;
+    gap: 25px;
   }
   
-  .register-btn { width: 100%; text-align: center; }
+  .register-btn { 
+    width: 80%; 
+    text-align: center; 
+    font-size: 1.2rem;
+    padding: 15px 0;
+  }
 
   .mobile-toggle { display: block; z-index: 1001; }
-  .nav-logo { font-size: 1.2rem; }
+  .nav-logo { font-size: 1.25rem; }
 }
 
