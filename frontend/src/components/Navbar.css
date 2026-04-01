@@ -206,6 +206,10 @@
 .close-icon::after { transform: rotate(-45deg); top: 0; left: 0; }
 
 @media (max-width: 1024px) {
+  .nav-container {
+    padding: 0 20px;
+  }
+
   .nav-links {
     position: fixed;
     top: 0;

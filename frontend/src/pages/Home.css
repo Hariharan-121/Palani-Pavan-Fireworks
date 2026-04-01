@@ -191,7 +191,7 @@
   .hero-btns {
     flex-direction: column;
     width: 100%;
-    padding: 0 40px;
+    padding: 0 20px;
   }
 
   .hero-logo {
