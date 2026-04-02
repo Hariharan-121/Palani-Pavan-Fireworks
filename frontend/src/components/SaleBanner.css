@@ -1,0 +1,188 @@
+.sale-banner-container {
+  width: 100%;
+  min-height: 80px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  padding: 15px 30px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.4);
+  z-index: 1000;
+  transition: all 0.3s;
+  animation: bannerShimmer 5s linear infinite;
+  background-size: 200% 100%;
+}
+
+@keyframes bannerShimmer {
+  0% { background-position: 0% 0%; }
+  50% { background-position: 100% 0%; }
+  100% { background-position: 0% 0%; }
+}
+
+.sale-banner-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 30px;
+  width: 100%;
+  max-width: 1200px;
+  position: relative;
+  z-index: 2;
+}
+
+.sale-banner-sparkles {
+  font-size: 1.2rem;
+  opacity: 0.8;
+  letter-spacing: 15px;
+  animation: sparkleRotate 3s linear infinite;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+  margin: 10px 0;
+  white-space: nowrap;
+}
+
+@keyframes sparkleRotate {
+  0%, 100% { transform: scale(1); opacity: 0.6; }
+  50% { transform: scale(1.1); opacity: 1; }
+}
+
+.sale-text-left {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.sale-badge {
+  display: inline-block;
+  background: #fff;
+  color: #ff6b00;
+  padding: 3px 12px;
+  border-radius: 50px;
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 1px;
+  width: fit-content;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.sale-title {
+  font-size: 1.5rem;
+  font-weight: 900;
+  color: #fff;
+  line-height: 1;
+  text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.sale-subtitle {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 500;
+}
+
+.sale-discount-orb {
+  width: 85px;
+  height: 85px;
+  background: #fff;
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 30px rgba(255, 255, 255, 0.4);
+  animation: orbPulse 2s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+@keyframes orbPulse {
+  0%, 100% { transform: scale(1); box-shadow: 0 0 20px rgba(255, 255, 255, 0.3); }
+  50% { transform: scale(1.1); box-shadow: 0 0 40px rgba(255, 255, 255, 0.6); }
+}
+
+.discount-prefix {
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: #666;
+  line-height: 1;
+}
+
+.discount-value {
+  font-size: 1.8rem;
+  font-weight: 900;
+  color: #ff6b00;
+  line-height: 1;
+  font-family: 'Outfit', sans-serif;
+}
+
+.discount-suffix {
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: #666;
+  line-height: 1;
+}
+
+.sale-timer-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.timer-headline {
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.sale-shop-now {
+  padding: 12px 25px;
+  background: #000;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.3s;
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+  white-space: nowrap;
+}
+
+.sale-shop-now:hover {
+  background: #333;
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.3);
+}
+
+.shake {
+  animation: tilt-shaking 0.5s infinite;
+}
+
+@keyframes tilt-shaking {
+  0% { transform: rotate(0deg); }
+  25% { transform: rotate(5deg); }
+  50% { transform: rotate(0deg); }
+  75% { transform: rotate(-5deg); }
+  100% { transform: rotate(0deg); }
+}
+
+@media (max-width: 1024px) {
+  .sale-banner-content {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+    text-align: center;
+  }
+}
+
+@media (max-width: 768px) {
+  .sale-banner-content {
+    flex-direction: column;
+    gap: 15px;
+  }
+  .sale-text-left {
+    align-items: center;
+  }
+}

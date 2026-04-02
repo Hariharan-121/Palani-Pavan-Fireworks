@@ -163,6 +163,20 @@
   transform: scale(1.05);
 }
 
+.profile-link {
+  color: var(--primary) !important;
+  transition: all 0.3s ease;
+}
+
+.profile-link:hover {
+  color: #ffaa00 !important;
+  text-shadow: 0 0 12px var(--primary-glow);
+}
+
+.profile-link::after {
+  background: var(--primary) !important;
+}
+
 .mobile-toggle {
   display: none;
   background: none;

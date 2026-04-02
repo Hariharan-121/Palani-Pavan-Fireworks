@@ -15,7 +15,9 @@ const {
   updateOrderStatus,
   getAllProducts,
   deleteProduct,
+  sendPromoEmail,
 } = require('../controllers/adminController');
+const { createSale, createFlashDeal } = require('../controllers/promoController');
 
 // ✅ Admin Dashboard Stats
 router.get('/dashboard', auth, admin, getDashboardStats);
@@ -31,6 +33,9 @@ router.put('/orders/:id/status', auth, admin, updateOrderStatus);
 
 // ✅ Product Management
 router.get('/products', auth, admin, getAllProducts);
-router.delete('/products/:id', auth, admin, deleteProduct);
+// ✅ Promotion Management
+router.post('/promo-email', auth, admin, sendPromoEmail);
+router.post('/sale', auth, admin, createSale);
+router.post('/flash-deal', auth, admin, createFlashDeal);
 
 module.exports = router;

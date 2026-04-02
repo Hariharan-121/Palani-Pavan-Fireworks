@@ -57,6 +57,7 @@ export default function Navbar() {
             </NavLink>
             {isAuthenticated() ? (
               <>
+                <NavLink to="/profile" className="nav-link profile-link" onClick={() => setIsOpen(false)}>👤 My Account</NavLink>
                 {isAdmin() && (
                   <NavLink to="/admin" className="nav-link admin-glow" onClick={() => setIsOpen(false)}>Admin Panel</NavLink>
                 )}

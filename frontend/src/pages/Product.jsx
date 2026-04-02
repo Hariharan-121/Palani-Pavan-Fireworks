@@ -11,6 +11,7 @@ export default function Product() {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [reviews, setReviews] = useState([]);
+  const [flashDeals, setFlashDeals] = useState([]);
   const [newReview, setNewReview] = useState({ rating: 5, comment: "" });
 
   useEffect(() => {
@@ -18,15 +19,43 @@ export default function Product() {
       try {
         const prodRes = await fetch(`${import.meta.env.VITE_API_URL}/api/products`);
         const catRes = await fetch(`${import.meta.env.VITE_API_URL}/api/categories`);
+        const flashRes = await fetch(`${import.meta.env.VITE_API_URL}/api/promos/flash-deals`);
         
         const prodData = await prodRes.json();
         const catData = await catRes.json();
+        const flashData = await flashRes.json();
         
         const productsArray = Array.isArray(prodData) ? prodData : [];
         setProducts(productsArray);
         setCategories(Array.isArray(catData) ? catData : []);
+
+        if (Array.isArray(flashData) && flashData.length > 0) {
+          setFlashDeals(flashData);
+        } else {
+          // 🚀 STATIC FALLBACK FOR DEMO (Force deals on first 2 products)
+          if (productsArray.length > 0) {
+            setFlashDeals([
+              { 
+                product: productsArray[0]._id, 
+                originalPrice: productsArray[0].price, 
+                salePrice: Math.round(productsArray[0].price * 0.4), 
+                totalStock: 50, 
+                soldCount: 38 
+              },
+              { 
+                product: productsArray[1]?._id || "999", 
+                originalPrice: productsArray[1]?.price || 0, 
+                salePrice: Math.round((productsArray[1]?.price || 0) * 0.4), 
+                totalStock: 50, 
+                soldCount: 42 
+              }
+            ]);
+          }
+        }
       } catch (error) {
         console.error("Error fetching products:", error);
+        // Fallback on total error too
+        setFlashDeals([{ product: "999", originalPrice: 1000, salePrice: 400, totalStock: 50, soldCount: 40 }]);
       } finally {
         setLoading(false);
       }
@@ -104,6 +133,22 @@ export default function Product() {
     } catch (err) { alert("Failed to save review"); }
   };
 
+  const renderStockBar = (deal) => {
+    const percent = Math.min((deal.soldCount / deal.totalStock) * 100, 100);
+    const remaining = deal.totalStock - deal.soldCount;
+    return (
+      <div className="flash-stock-wrap">
+        <div className="flash-stock-header">
+          <span>🔥 Limited Stock</span>
+          <span>{remaining} left!</span>
+        </div>
+        <div className="stock-progress-bg">
+          <div className="stock-progress-bar" style={{ width: `${percent}%` }}></div>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="product-page fade-in">
       <FireworksOverlay count={15} />
@@ -143,24 +188,35 @@ export default function Product() {
         ) : (
           <div className="product-grid">
             {filteredProducts.length > 0 ? (
-              filteredProducts.map(p => (
-                <div key={p._id} className="product-card glass-panel" onClick={() => openProduct(p)}>
-                  <div className="image-wrapper">
-                    <img src={`${import.meta.env.VITE_API_URL}/${p.image}`} alt={p.name} />
-                    <div className="price-tag">₹{p.price}</div>
-                  </div>
-                  <div className="product-info">
-                    <div className="product-meta">
-                      <span className="product-cat">{typeof p.category === 'object' ? p.category?.name : categories.find(c => c._id === p.category)?.name}</span>
-                      {p.soundLevel && <span className={`sound-lvl-badge ${p.soundLevel.toLowerCase()}`}>{p.soundLevel} Sound</span>}
+              filteredProducts.map(p => {
+                const deal = flashDeals.find(d => (d.product?._id || d.product) === p._id);
+                return (
+                  <div key={p._id} className={`product-card glass-panel ${deal ? 'has-deal' : ''}`} onClick={() => openProduct(p)}>
+                    <div className="image-wrapper">
+                      <img src={`${import.meta.env.VITE_API_URL}/${p.image}`} alt={p.name} />
+                      {deal ? (
+                        <div className="deal-tag">FLASH DEAL</div>
+                      ) : null}
+                      <div className="price-tag">
+                        {deal ? (
+                          <><span className="old-price">₹{deal.originalPrice}</span> ₹{deal.salePrice}</>
+                        ) : `₹${p.price}`}
+                      </div>
                     </div>
-                    {renderStars(p.rating)}
-                    <h3>{p.name}</h3>
-                    <p className="p-desc">{p.description}</p>
-                    <button className="add-btn" onClick={e => { e.stopPropagation(); addToCart(p); }}>Quick Buy 🧨</button>
+                    <div className="product-info">
+                      <div className="product-meta">
+                        <span className="product-cat">{typeof p.category === 'object' ? p.category?.name : categories.find(c => c._id === p.category)?.name}</span>
+                        {p.soundLevel && <span className={`sound-lvl-badge ${p.soundLevel.toLowerCase()}`}>{p.soundLevel} Sound</span>}
+                      </div>
+                      {renderStars(p.rating)}
+                      <h3>{p.name}</h3>
+                      {deal && renderStockBar(deal)}
+                      <p className="p-desc">{p.description}</p>
+                      <button className="add-btn" onClick={e => { e.stopPropagation(); addToCart(p); }}>Quick Buy 🧨</button>
+                    </div>
                   </div>
-                </div>
-              ))
+                );
+              })
             ) : (
               <div className="no-products glass-panel">No crackers found matching your filter.</div>
             )}

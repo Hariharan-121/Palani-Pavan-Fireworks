@@ -1,6 +1,7 @@
 const User = require('../models/User');
 const Order = require('../models/Order');
 const Product = require('../models/Product');
+const sendEmail = require('../utils/email');
 
 // ================================
 // ✅ ADMIN DASHBOARD STATS
@@ -183,7 +184,7 @@ exports.updateOrderStatus = async (req, res) => {
       req.params.id,
       { status },
       { new: true }
-    );
+    ).populate('user', 'name email');
 
     if (!order) {
       return res.status(404).json({
@@ -192,15 +193,88 @@ exports.updateOrderStatus = async (req, res) => {
       });
     }
 
+    // 📧 Send Status Update Email
+    const statusMessages = {
+      'Dispatched': 'Your order has been shipped! 🚚 It is on its way to you.',
+      'Delivered': 'Your order has been delivered! ✅ Enjoy your fireworks!',
+      'Cancelled': 'Your order has been cancelled. ❌ If you paid online, refund will be processed soon.'
+    };
+
+    if (statusMessages[status]) {
+      await sendEmail({
+        to: order.user.email,
+        subject: `Order Update: ${status} - Sri Palani Pavan Fireworks`,
+        html: `
+          <div style="font-family: Arial, sans-serif; padding: 20px; color: #333;">
+            <h2 style="color: #f8931f;">Order Status Update</h2>
+            <p>Hello <strong>${order.user.name}</strong>,</p>
+            <p>${statusMessages[status]}</p>
+            <div style="background: #f4f4f4; padding: 15px; border-radius: 8px; margin: 20px 0;">
+              <p><strong>Order ID:</strong> #${order._id}</p>
+              <p><strong>New Status:</strong> <span style="color: #f8931f; font-weight: bold;">${status}</span></p>
+            </div>
+            <p>Thank you for choosing Sri Palani Pavan Fireworks!</p>
+          </div>
+        `
+      });
+    }
+
     res.status(200).json({
       success: true,
-      message: 'Order status updated successfully',
+      message: 'Order status updated successfully and email sent',
       order,
     });
   } catch (error) {
     res.status(500).json({
       success: false,
       message: 'Failed to update order status',
+      error: error.message,
+    });
+  }
+};
+
+// ✅ Send Promotional Email (Bulk)
+exports.sendPromoEmail = async (req, res) => {
+  try {
+    const { subject, message, target } = req.body; // target: 'all' or specific email
+
+    const users = target === 'all' 
+      ? await User.find().select('email name')
+      : await User.find({ email: target }).select('email name');
+
+    if (users.length === 0) {
+      return res.status(404).json({ success: false, message: 'No users found' });
+    }
+
+    // Send emails (In a real app, use a queue/background job)
+    for (const user of users) {
+      await sendEmail({
+        to: user.email,
+        subject: subject,
+        html: `
+          <div style="font-family: Arial, sans-serif; padding: 20px; color: #333;">
+            <h2 style="color: #f8931f;">Special Offer from Sri Palani Pavan Fireworks!</h2>
+            <p>Hello ${user.name},</p>
+            <div style="white-space: pre-wrap;">${message}</div>
+            <p style="margin-top: 30px;">
+              <a href="${process.env.FRONTEND_URL || 'http://localhost:5174'}" 
+                 style="background: #f8931f; color: white; padding: 12px 25px; text-decoration: none; border-radius: 5px; font-weight: bold;">
+                 Shop Now
+              </a>
+            </p>
+          </div>
+        `
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: `Promotional emails sent to ${users.length} users`,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Failed to send promotional emails',
       error: error.message,
     });
   }

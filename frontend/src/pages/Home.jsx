@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import "./Home.css";
 import FireworksOverlay from "../components/FireworksOverlay";
 import TraditionalLamp from "../components/TraditionalLamp";
+import SaleBanner from "../components/SaleBanner";
 import logo from "../assets/spp-logo.png";
 
 export default function Home() {
@@ -24,6 +25,9 @@ export default function Home() {
 
   return (
     <div className="home-page fade-in">
+      {/* 🎉 Sale Banner (Dynamic) */}
+      <SaleBanner />
+
       {/* Hero Section */}
       <section className="hero-section">
         <FireworksOverlay count={40} />

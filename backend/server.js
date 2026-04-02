@@ -35,6 +35,7 @@ app.use('/api/reviews', require('./routes/reviews'));
 app.use('/api/users', require('./routes/users'));
 app.use('/api/coupons', require('./routes/coupons'));
 app.use('/api/admin', require('./routes/admin'));
+app.use('/api/promos', require('./routes/promo'));
 
 // ✅ Health Check
 app.get('/', (req, res) => {
